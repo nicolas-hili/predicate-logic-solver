@@ -259,7 +259,9 @@ parser = /*
                     	args.push(arg[2][i][1]);
                     }
                     predicate.args=args;
-                    return predicate
+                    
+                    checkPredAndFunctionSymbols(predicate);
+                    return predicate;
                 }
                 return {type:"predicate", "name":name};
            	},
@@ -276,6 +278,8 @@ parser = /*
                     	args.push(arg[2][i][1]);
                     }
                     func.args=args;
+                    
+                    checkPredAndFunctionSymbols(func);
                     return func;
                 }
                 return {type:"function", "name":name};
@@ -1626,6 +1630,23 @@ parser = /*
 
       return s0;
     }
+
+
+    	function checkPredAndFunctionSymbols (expr) {
+        	var isPredicate = (expr.type === "predicate");
+            var output = (isPredicate) ? "B" : "D";
+            var name = expr.name;
+            for (var i = 0; i < expr.args.length; i++) {
+            	var arg = expr.args[i];
+                if (arg.type === "predicate") {
+                    error(name+" is defined as "+name+": D -> "+output+" and "
+                    	+ arg.name + " is defined as "+name+": D -> B."  
+                        + "Therefore, " + name + "("+arg.name+"(...)) is not consistent.");
+                }
+            }
+        	return true;
+        }
+
 
     peg$result = peg$startRuleFunction();
 

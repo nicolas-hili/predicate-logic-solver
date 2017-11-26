@@ -1,3 +1,20 @@
+{
+	function checkPredAndFunctionSymbols (expr) {
+    	var isPredicate = (expr.type === "predicate");
+        var output = (isPredicate) ? "B" : "D";
+        var name = expr.name;
+        for (var i = 0; i < expr.args.length; i++) {
+        	var arg = expr.args[i];
+            if (arg.type === "predicate") {
+                error(name+" is defined as "+name+": D -> "+output+" and "
+                	+ arg.name + " is defined as "+name+": D -> B."
+                    + "Therefore, " + name + "("+arg.name+"(...)) is not consistent.");
+            }
+        }
+    	return true;
+    }
+}
+
 Formulas=
 	_ formulas:(formula:BinaryFormula _)+ {
     var f = Array();
@@ -37,7 +54,7 @@ AtomicFormula
 
             if (right != null) {
             	atomicFormula.rel_op = right[0];
-              atomicFormula.e2 = right[2];
+                atomicFormula.e2 = right[2];
             }
             return atomicFormula;
         }
@@ -116,10 +133,14 @@ Predicate
             	args.push(arg[2][i][1]);
             }
             predicate.args=args;
-            return predicate
+
+            checkPredAndFunctionSymbols(predicate);
+            return predicate;
         }
         return {type:"predicate", "name":name};
    	}
+
+
 
 Function
 	= name: [f,g,h,i,j,k,l] arg:('('first: BinExpr (',' others: BinExpr)*')')? {
@@ -133,6 +154,8 @@ Function
             	args.push(arg[2][i][1]);
             }
             func.args=args;
+
+            checkPredAndFunctionSymbols(func);
             return func;
         }
         return {type:"function", "name":name};
