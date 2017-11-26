@@ -2,20 +2,64 @@
 <html>
 <head>
 <meta charset="UTF-8">
+
+<style type="text/css">
+pre {
+	padding: 0.1em 0.5em 0.3em 0.7em;
+	border-left: 11px solid #ccc;
+	margin: 1.7em 0 1.7em 0.3em;
+	overflow: auto;
+	width: 93%;
+}
+</style>
 <title>Test 1</title>
 </head>
 
 	<ol>
+
+
+		<li>
+			<span class="formula">forall x : [0..10] . P(f(x), y)</span>
+			<pre></pre>
+			<pre></pre>
+		</li>
+
+		<li>
+			<span class="formula">P(x) <-> Q(f(y))</span>
+			<pre></pre>
+			<pre></pre>
+		</li>
+
+		<li>
+			<span class="formula">!(x>2) <-> (y>3)</span>
+			<pre></pre>
+			<pre></pre>
+		</li>
+
+		<li>
+			<span class="formula">!(x>2) && (y>3) -> (z > 4)</span>
+			<pre></pre>
+			<pre></pre>
+		</li>
+
+		<li>
+			<span class="formula">!(x>2)</span>
+			<pre></pre>
+			<pre></pre>
+		</li>
+
 		<li>
 			<span class="formula">a < 3</span>
 			<pre></pre>
+			<pre></pre>
 		</li>
-		
+
 		<li>
 			<span class="formula">forall x : [1..10] . ( x > 3)</span>
 			<pre></pre>
+			<pre></pre>
 		</li>
-		
+
 		<li>
 			<span class="formula">exists x : [0..10] . (
     exists y : [0..10] . (
@@ -24,35 +68,40 @@
             )
         )
     )
-            					
-        				
-     				
+
+
+
 			</span>
 			<pre></pre>
+			<pre></pre>
 		</li>
-		
+
 
 	</ol>
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pegjs/0.9.0/peg.min.js"></script>
+<script src="../visualizer/visualizer.js"></script>
 <script src="../parser/parser.js"></script>
 <script type="text/javascript">
 (function() {
   "use strict";
-  
+
   var formulas = document.getElementsByClassName("formula");
-  
+
   for (var i = 0; i < formulas.length; i++) {
   	var formula = formulas[i].innerHTML.replace(/&lt;/g,"<",i)
   					   .replace(/&gt;/g,">",i)
   					   .replace(/&amp;/g,"&",i);
-  					   
+
   	try {
-  		console.log(formula);
+  		//console.log(formula);
   		var f = parser.parse(formula);
-  		formulas[i].nextElementSibling.innerHTML = JSON.stringify(f, null, 2);
+			console.log(visualizer.visualize(f));
+			formulas[i].nextElementSibling.innerHTML = visualizer.visualize(f);
+  		formulas[i].nextElementSibling.nextElementSibling.innerHTML = JSON.stringify(f, null, 2);
 	}
-	catch(err) {				   
+	catch(err) {
+		  formulas[i].nextElementSibling.remove();
   		formulas[i].nextElementSibling.innerHTML = err.message;
   	}
   }
