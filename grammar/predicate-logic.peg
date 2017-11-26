@@ -1,0 +1,98 @@
+Formulas=
+	_ formulas:(formula:BinaryFormula _)+ {
+    var f = Array();
+    for (var i = 0; i < formulas.length; i++) {
+        f.push(formulas[i][0]);
+    }
+    return f;}
+
+BinaryFormula
+	= _ '(' _ f:BinaryFormula _ ')' _ {return f;}  /
+        f1:Formula _ bin_conn:(bin_conn:BinConn _ f2:BinaryFormula)? {
+        if(bin_conn !== null) {
+    		var binFormula = {};
+    		binFormula.type="binary";
+    		binFormula.f1 = f1;
+    		binFormula.bin_conn = bin_conn[0];
+    		binFormula.f2 = bin_conn[2];
+            return binFormula;
+    	} else {
+        	return f1;
+        }
+	}
+    
+Formula
+	=	_ '(' _ f:Formula _ ')' _ { return f; } / // never consumed
+    	AtomicFormula /
+    	UnaryFormula / 
+        QuantifiedFormula
+        
+AtomicFormula
+	= _ e1:BinExpr _ rel_op:RelOp _ e2:BinExpr _
+    	{return {type:"atomic", e1:e1, rel_op:rel_op, e2:e2};}
+    
+UnaryFormula
+	= un_conn:UnConn f:BinaryFormula
+    {return {type:"unary", un_conn:un_conn, f:f};}
+
+QuantifiedFormula
+	= quant:Quantifier _ variable:Variable _ ':' _ dom:Domain? _ '.' _ f:BinaryFormula _
+    {
+    	var quantifiedFormula = {};
+        quantifiedFormula.type = "quantified";
+        quantifiedFormula.quant = quant;
+        quantifiedFormula.variable = variable;
+        if (dom !== null)
+        	quantifiedFormula.dom = dom;
+        quantifiedFormula.f = f;
+    	return quantifiedFormula;
+    }
+
+BinExpr
+	= _ '(' _ expr:BinExpr _ ')' _ {return expr;}  /
+    _ e1:Expr _ bin_op:( _ bin_op:BinOp _ e2:BinExpr _ )? _
+    {
+    	if (bin_op != null) {
+	        var binExpr = {};
+	        binExpr.type = 'binExpr';
+	        binExpr.e1 = e1;
+    		binExpr.bin_op = bin_op[1];
+            binExpr.e2 = bin_op[3];
+            return binExpr;
+        } else {
+        	return e1;
+        }
+    }
+    
+Expr
+	= _ '(' _ expr:Expr _ ')' _ { return {expr};}  / // never consumed
+      Int /
+      Variable
+    
+BinConn
+	= "&&" / "||" / "->" / "<->"
+    
+RelOp
+	= "<" / ">" / "="
+
+UnConn
+	= "!"
+    
+BinOp 
+	= "+" / "-" / "/" / "*" / "mod"
+
+Int
+	= value:[0-9]+ {return value.join('');}
+
+Domain
+	= '['_ from:Int _ '..' _ to:Int _ ']'
+      {return {from:from, to:to}}
+      
+Variable
+	= value:[a-z]+ {return value.join('');}
+    
+Quantifier
+	= "forall" / "exists"
+    
+_ "whitespace"
+  = [ \t\n\r]*
