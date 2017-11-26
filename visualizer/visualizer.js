@@ -5,6 +5,9 @@ visualizer = (function() {
     var html="";
     for (var i = 0; i < formulas.length; i++) {
       html += visualizeFormula(formulas[i]);
+      if (i < formulas.length-1) {
+        html+="<br />";
+      }
     }
     return html;
   }
