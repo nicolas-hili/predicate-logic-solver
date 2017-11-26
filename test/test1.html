@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test 1</title>
+</head>
+
+	<ol>
+		<li>
+			<span class="formula">a < 3</span>
+			<pre></pre>
+		</li>
+		
+		<li>
+			<span class="formula">forall x : [1..10] . ( x > 3)</span>
+			<pre></pre>
+		</li>
+		
+		<li>
+			<span class="formula">exists x : [0..10] . (
+    exists y : [0..10] . (
+        exists z : [0..10] . (
+                (x * x + y * y) = (z * z)
+            )
+        )
+    )
+            					
+        				
+     				
+			</span>
+			<pre></pre>
+		</li>
+		
+
+	</ol>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pegjs/0.9.0/peg.min.js"></script>
+<script src="../parser/parser.js"></script>
+<script type="text/javascript">
+(function() {
+  "use strict";
+  
+  var formulas = document.getElementsByClassName("formula");
+  
+  for (var i = 0; i < formulas.length; i++) {
+  	var formula = formulas[i].innerHTML.replace(/&lt;/g,"<",i)
+  					   .replace(/&gt;/g,">",i)
+  					   .replace(/&amp;/g,"&",i);
+  					   
+  	try {
+  		console.log(formula);
+  		var f = parser.parse(formula);
+  		formulas[i].nextElementSibling.innerHTML = JSON.stringify(f, null, 2);
+	}
+	catch(err) {				   
+  		formulas[i].nextElementSibling.innerHTML = err.message;
+  	}
+  }
+})();
+</script>
+</body>
+</html>
