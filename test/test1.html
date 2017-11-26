@@ -17,31 +17,31 @@ pre {
 
 
 		<li>
-			<span class="formula">forall x : [0..10] . P(f(x), y)</span>
+			<span class="formula">forall x. forall y . P(f(x), y)</span>
 			<pre></pre>
 			<pre></pre>
 		</li>
 
 		<li>
-			<span class="formula">P(x) <-> Q(f(y))</span>
+			<span class="formula">forall x : [0..10] . (P(x) <-> exists y : [1..3] . Q(f(y)))</span>
 			<pre></pre>
 			<pre></pre>
 		</li>
 
 		<li>
-			<span class="formula">!(x>2) <-> (y>3)</span>
+			<span class="formula">forall x :[0..10]. forall y : [0..10] . !(x>2) <-> (y>3)</span>
 			<pre></pre>
 			<pre></pre>
 		</li>
 
 		<li>
-			<span class="formula">!(x>2) && (y>3) -> (z > 4)</span>
+			<span class="formula">forall x . exists y . exists z. !(x>2) && (y>3) -> (z > 4)</span>
 			<pre></pre>
 			<pre></pre>
 		</li>
 
 		<li>
-			<span class="formula">!(x>2)</span>
+			<span class="formula">exists y : [1..10] . !(x>2)</span>
 			<pre></pre>
 			<pre></pre>
 		</li>
