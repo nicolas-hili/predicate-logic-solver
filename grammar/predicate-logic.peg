@@ -23,13 +23,26 @@ BinaryFormula
     
 Formula
 	=	_ '(' _ f:Formula _ ')' _ { return f; } / // never consumed
-    	AtomicFormula /
-    	UnaryFormula / 
-        QuantifiedFormula
+    	QuantifiedFormula /
+        AtomicFormula /
+    	UnaryFormula
+        
         
 AtomicFormula
-	= _ e1:BinExpr _ rel_op:RelOp _ e2:BinExpr _
-    	{return {type:"atomic", e1:e1, rel_op:rel_op, e2:e2};}
+	= _ e1:BinExpr _ right:(rel_op:RelOp _ e2:BinExpr)? _
+    	{
+        	if (right != null) {
+            	var atomicFormula = {};
+                atomicFormula.type = "atomic";
+                atomicFormula.e1 = e1;
+                atomicFormula.rel_op = right[0];
+                atomicFormula.e2 = right[2];
+        		return atomicFormula;
+            }
+            else {
+            	return e1;
+            }
+        }
     
 UnaryFormula
 	= un_conn:UnConn f:BinaryFormula
@@ -67,7 +80,9 @@ BinExpr
 Expr
 	= _ '(' _ expr:Expr _ ')' _ { return {expr};}  / // never consumed
       Int /
-      Variable
+      Variable /
+      Predicate /
+      Function
     
 BinConn
 	= "&&" / "||" / "->" / "<->"
@@ -89,7 +104,41 @@ Domain
       {return {from:from, to:to}}
       
 Variable
-	= value:[a-z]+ {return value.join('');}
+	= name:[a,b,c,w,x,y,z] {return name;}
+    
+Predicate
+	= name: [P,Q,R,S,T,U,V] arg:('('first: BinExpr (',' others: BinExpr)*')')? {
+    	if (arg != null) {
+        	var predicate = {};
+            predicate.name = name;
+            var args = Array();
+            predicate.type = "predicate";
+            args.push(arg[1]);
+            for (var i = 0; i < arg[2].length; i++) {
+            	args.push(arg[2][i][1]);
+            }
+            predicate.args=args;
+            return predicate
+        }
+        return {type:"predicate", "name":name};
+   	}
+    
+Function
+	= name: [f,g,h,i,j,k,l] arg:('('first: BinExpr (',' others: BinExpr)*')')? {
+    	if (arg != null) {
+        	var func = {};
+            func.name = name;
+            var args = Array();
+            func.type = "function";
+            args.push(arg[1]);
+            for (var i = 0; i < arg[2].length; i++) {
+            	args.push(arg[2][i][1]);
+            }
+            func.args=args;
+            return func;
+        }
+        return {type:"function", "name":name};
+   	}
     
 Quantifier
 	= "forall" / "exists"
