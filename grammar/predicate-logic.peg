@@ -75,14 +75,14 @@ UnaryFormula
     {return {type:"unary", un_conn:un_conn, f:f};}
 
 QuantifiedFormula
-	= quant:Quantifier _ variable:BoundVariable _ ':' _ dom:Domain? _ '.' _ f:BinaryFormula _
+	= quant:Quantifier _ variable:BoundVariable _ dom:(':' _ Domain)? _ '.' _ f:BinaryFormula _
     {
     	var quantifiedFormula = {};
         quantifiedFormula.type = "quantified";
         quantifiedFormula.quant = quant;
         quantifiedFormula.variable = variable;
         if (dom !== null)
-        	quantifiedFormula.dom = dom;
+        	quantifiedFormula.dom = dom[2];
         quantifiedFormula.f = f;
     	return quantifiedFormula;
     }
