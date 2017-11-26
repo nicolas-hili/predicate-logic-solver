@@ -20,30 +20,28 @@ BinaryFormula
         	return f1;
         }
 	}
-    
+
 Formula
 	=	_ '(' _ f:Formula _ ')' _ { return f; } / // never consumed
     	QuantifiedFormula /
         AtomicFormula /
     	UnaryFormula
-        
-        
+
+
 AtomicFormula
 	= _ e1:BinExpr _ right:(rel_op:RelOp _ e2:BinExpr)? _
     	{
-        	if (right != null) {
-            	var atomicFormula = {};
-                atomicFormula.type = "atomic";
-                atomicFormula.e1 = e1;
-                atomicFormula.rel_op = right[0];
-                atomicFormula.e2 = right[2];
-        		return atomicFormula;
+            var atomicFormula = {};
+            atomicFormula.type = "atomic";
+            atomicFormula.e1 = e1;
+
+            if (right != null) {
+            	atomicFormula.rel_op = right[0];
+              atomicFormula.e2 = right[2];
             }
-            else {
-            	return e1;
-            }
+            return atomicFormula;
         }
-    
+
 UnaryFormula
 	= un_conn:UnConn f:BinaryFormula
     {return {type:"unary", un_conn:un_conn, f:f};}
@@ -76,24 +74,24 @@ BinExpr
         	return e1;
         }
     }
-    
+
 Expr
 	= _ '(' _ expr:Expr _ ')' _ { return {expr};}  / // never consumed
       Int /
       Variable /
       Predicate /
       Function
-    
+
 BinConn
 	= "&&" / "||" / "->" / "<->"
-    
+
 RelOp
 	= "<" / ">" / "="
 
 UnConn
 	= "!"
-    
-BinOp 
+
+BinOp
 	= "+" / "-" / "/" / "*" / "mod"
 
 Int
@@ -102,10 +100,10 @@ Int
 Domain
 	= '['_ from:Int _ '..' _ to:Int _ ']'
       {return {from:from, to:to}}
-      
+
 Variable
 	= name:[a,b,c,w,x,y,z] {return name;}
-    
+
 Predicate
 	= name: [P,Q,R,S,T,U,V] arg:('('first: BinExpr (',' others: BinExpr)*')')? {
     	if (arg != null) {
@@ -122,7 +120,7 @@ Predicate
         }
         return {type:"predicate", "name":name};
    	}
-    
+
 Function
 	= name: [f,g,h,i,j,k,l] arg:('('first: BinExpr (',' others: BinExpr)*')')? {
     	if (arg != null) {
@@ -139,9 +137,9 @@ Function
         }
         return {type:"function", "name":name};
    	}
-    
+
 Quantifier
 	= "forall" / "exists"
-    
+
 _ "whitespace"
   = [ \t\n\r]*

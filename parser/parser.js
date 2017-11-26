@@ -166,17 +166,15 @@ parser = /*
         	},
         peg$c7 = function(f) { return f; },
         peg$c8 = function(e1, right) {
-                	if (right != null) {
-                    	var atomicFormula = {};
-                        atomicFormula.type = "atomic";
-                        atomicFormula.e1 = e1;
-                        atomicFormula.rel_op = right[0];
-                        atomicFormula.e2 = right[2];
-                		return atomicFormula;
+                    var atomicFormula = {};
+                    atomicFormula.type = "atomic";
+                    atomicFormula.e1 = e1;
+                    
+                    if (right != null) {
+                    	atomicFormula.rel_op = right[0];
+                        atomicFormula.e2 = right[2];	
                     }
-                    else {
-                    	return e1;
-                    }
+                    return atomicFormula;
                 },
         peg$c9 = function(un_conn, f) {return {type:"unary", un_conn:un_conn, f:f};},
         peg$c10 = ":",
