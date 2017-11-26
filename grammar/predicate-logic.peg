@@ -1,4 +1,7 @@
 {
+
+	var boundVariables={};
+
 	function checkPredAndFunctionSymbols (expr) {
     	var isPredicate = (expr.type === "predicate");
         var output = (isPredicate) ? "B" : "D";
@@ -12,6 +15,14 @@
             }
         }
     	return true;
+    }
+
+    function registerBoundVariable(name) {
+    	boundVariables[name] = true;
+    }
+
+    function getBoundVariable(name) {
+    	return boundVariables[name];
     }
 }
 
@@ -64,7 +75,7 @@ UnaryFormula
     {return {type:"unary", un_conn:un_conn, f:f};}
 
 QuantifiedFormula
-	= quant:Quantifier _ variable:Variable _ ':' _ dom:Domain? _ '.' _ f:BinaryFormula _
+	= quant:Quantifier _ variable:BoundVariable _ ':' _ dom:Domain? _ '.' _ f:BinaryFormula _
     {
     	var quantifiedFormula = {};
         quantifiedFormula.type = "quantified";
@@ -118,8 +129,19 @@ Domain
 	= '['_ from:Int _ '..' _ to:Int _ ']'
       {return {from:from, to:to}}
 
+BoundVariable
+	= name:[a,b,c,w,x,y,z] {
+    	registerBoundVariable(name);
+        return name;
+    }
+
 Variable
-	= name:[a,b,c,w,x,y,z] {return name;}
+	= name:[a,b,c,w,x,y,z] {
+    	if(!getBoundVariable(name)) {
+        	error(name+" is not bound to any quantifier.");
+        }
+    	return name;
+      }
 
 Predicate
 	= name: [P,Q,R,S,T,U,V] arg:('('first: BinExpr (',' others: BinExpr)*')')? {
